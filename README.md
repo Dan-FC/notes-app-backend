@@ -1,6 +1,6 @@
 # Notes API (Backend)
 
-### Run the API
+### Run the API Yeah
 
 ```bash
 cd test-backend
@@ -21,7 +21,6 @@ Copy `.env.example` to `.env` and set `CORS_ORIGINS` to the frontend URLs that m
 
 - API: http://127.0.0.1:8000
 - Interactive docs: http://127.0.0.1:8000/docs
-
 
 ## Testssssss
 
@@ -59,17 +58,17 @@ Pushes and pull requests to `main` run tests. A successful **push** to `main` de
 
 **Secrets** (Settings → Secrets and variables → Actions):
 
-| Secret | Description |
-|--------|-------------|
-| `AWS_ACCESS_KEY_ID` | IAM access key |
+| Secret                  | Description    |
+| ----------------------- | -------------- |
+| `AWS_ACCESS_KEY_ID`     | IAM access key |
 | `AWS_SECRET_ACCESS_KEY` | IAM secret key |
 
 **Variables**:
 
-| Variable | Example | Description |
-|----------|---------|-------------|
-| `AWS_REGION` | `us-east-1` | AWS region |
-| `EB_APPLICATION_NAME` | `notes-api` | EB application name |
+| Variable              | Example          | Description         |
+| --------------------- | ---------------- | ------------------- |
+| `AWS_REGION`          | `us-east-1`      | AWS region          |
+| `EB_APPLICATION_NAME` | `notes-api`      | EB application name |
 | `EB_ENVIRONMENT_NAME` | `notes-api-prod` | EB environment name |
 
 ### Pipeline overview
@@ -96,9 +95,9 @@ Elastic Beanstalk does not read `Dockerfile` alone on the Docker platform — it
 }
 ```
 
-| Field | Meaning |
-|-------|---------|
-| `AWSEBDockerrunVersion` | `1` = one Docker container per instance |
+| Field                   | Meaning                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------- |
+| `AWSEBDockerrunVersion` | `1` = one Docker container per instance                                                                   |
 | `Ports[].ContainerPort` | Port **inside** the container where Uvicorn listens (`8000`, matching the `Dockerfile` and `EXPOSE 8000`) |
 
 Elastic Beanstalk builds the image from `Dockerfile`, runs the container, and routes public HTTP traffic (port 80 on the load balancer) to this container port.
@@ -114,21 +113,21 @@ option_settings:
     Protocol: HTTP
 ```
 
-| Setting | Meaning |
-|---------|---------|
+| Setting           | Meaning                                                               |
+| ----------------- | --------------------------------------------------------------------- |
 | `HealthCheckPath` | URL path the load balancer calls to decide if the instance is healthy |
-| `Protocol` | Use HTTP (not HTTPS) for the check |
+| `Protocol`        | Use HTTP (not HTTPS) for the check                                    |
 
 That path must exist on the API. The app exposes `GET /health`, which returns `{"status": "ok"}`. If the check fails (wrong path, app crash, or container not listening on port 8000), Elastic Beanstalk marks the instance unhealthy and can roll back the deployment.
 
-**Why both files?** `Dockerrun.aws.json` defines *how the container runs* (which port). `healthcheck.config` defines *how AWS knows the app is working* (which URL to probe). They work together: traffic hits port 8000 in the container, and `/health` confirms the FastAPI process is responding.
+**Why both files?** `Dockerrun.aws.json` defines _how the container runs_ (which port). `healthcheck.config` defines _how AWS knows the app is working_ (which URL to probe). They work together: traffic hits port 8000 in the container, and `/health` confirms the FastAPI process is responding.
 
 ### CORS on Elastic Beanstalk
 
 `.env` is not deployed to EB (see `.dockerignore`). In the EB console, open your environment → **Configuration** → **Software** → **Environment properties** and set:
 
-| Property | Example |
-|----------|---------|
+| Property       | Example                                                             |
+| -------------- | ------------------------------------------------------------------- |
 | `CORS_ORIGINS` | `http://notes-app-frontend-test.s3-website-us-east-1.amazonaws.com` |
 
 Use a comma-separated list for multiple origins (e.g. local dev + S3 website URL). Redeploy or apply the configuration change for it to take effect.
